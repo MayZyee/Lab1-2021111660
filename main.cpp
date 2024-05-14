@@ -3,8 +3,9 @@
 #include <sstream>
 int main()
 {
-    // hello
-    // world
+<<<<<<< HEAD
+=======
+>>>>>>> C4
     read file = read("input.txt");
     std::vector<std::string> words = file.processedLines;
     Graph graph(words);

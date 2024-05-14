@@ -10,8 +10,9 @@
 #include <conio.h>
 
 // git测试
-// 分支测试
-// hahaha
+<<<<<<< HEAD
+=======
+>>>>>>> C4
 
 class Graph
 {
