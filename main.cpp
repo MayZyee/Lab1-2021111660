@@ -3,7 +3,6 @@
 #include <sstream>
 int main()
 {
-    // hello
     read file = read("input.txt");
     std::vector<std::string> words = file.processedLines;
     Graph graph(words);
