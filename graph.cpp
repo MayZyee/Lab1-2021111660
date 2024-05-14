@@ -9,10 +9,16 @@
 #include <queue>
 #include <conio.h>
 
-// git测试
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 >>>>>>> C4
+=======
+<<<<<<< HEAD
+=======
+// #include <bits\stdc++.h>
+>>>>>>> b000edef1180efd9a16eeae5e222f3e3362996bf
+>>>>>>> master
 
 class Graph
 {
@@ -475,4 +481,8 @@ private:
     }
 };
 
+<<<<<<< HEAD
 #endif
+=======
+#endif
+>>>>>>> b000edef1180efd9a16eeae5e222f3e3362996bf
