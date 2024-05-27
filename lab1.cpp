@@ -93,7 +93,15 @@ public:
                 if (words[k] == word1 && words[k + 1] == word2)
                     w++;
             }
-            adj[nodes[word1]].push_back({nodes[word2], w});
+
+            int in = 0;
+            for (auto &p : adj[nodes[word1]])
+            {
+                if (p.first == nodes[word2])
+                    in = 1;
+            }
+            if (!in)
+                adj[nodes[word1]].push_back({nodes[word2], w});
         }
         todo();
     };
@@ -502,6 +510,8 @@ private:
                 return {};
             }
 
+            // std::cout << length << "," << dist[nodes[start]] << std::endl;
+
             if (length <= dist[nodes[start]])
             {
                 int count;
@@ -512,17 +522,37 @@ private:
                 for (auto &p : nodes)
                     if (p.second == count)
                         current = p.first;
+                std::cout << current << std::endl;
                 while (current != "")
                 {
                     path.push_back(current);
+                    // std::cout << path[0] << std::endl;
                     current = prev[nodes[current]];
+                    // std::cout << current << std::endl;
                 }
                 reverse(path.begin(), path.end());
+                // std::cout << path[1] << std::endl;
+                dist[nodes[start]] = length;
+
+                std::cout << "Shortest path: ";
+                for (auto p = path.begin(); p != path.end(); p++)
+                {
+                    std::cout << *p << "->";
+                }
+                std::cout << end << std::endl;
+                std::cout << "Length: " << dist[nodes[end]] << std::endl;
             }
             else
             {
                 path.push_back(start);
                 length = dist[nodes[start]];
+                std::cout << "Shortest path: ";
+                for (auto p = path.begin(); p != path.end() - 1; p++)
+                {
+                    std::cout << *p << "->";
+                }
+                std::cout << end << std::endl;
+                std::cout << "Length: " << dist[nodes[end]] << std::endl;
             }
             // path.push_back(start);
         }
@@ -534,19 +564,16 @@ private:
                 current = prev[nodes[current]];
             }
             reverse(path.begin(), path.end());
+            std::cout << "Shortest path: ";
+            for (auto p = path.begin(); p != path.end() - 1; p++)
+            {
+                std::cout << *p << "->";
+            }
+            std::cout << end << std::endl;
+            std::cout << "Length: " << dist[nodes[end]] << std::endl;
         }
-
-        if (!dist[nodes[start]])
-            dist[nodes[start]] = std::min(length, dist[nodes[start]]);
 
         // 打印路径和长度
-        std::cout << "Shortest path: ";
-        for (int i = 0; i < path.size() - 1; i++)
-        {
-            std::cout << path[i] << "->";
-        }
-        std::cout << end << std::endl;
-        std::cout << "Length: " << dist[nodes[end]] << std::endl;
 
         return path;
     }
