@@ -1,13 +1,11 @@
-/**
- * @file lab1.cpp
- * @author your name (you@domain.com)
- * @brief
- * @version 0.1
- * @date 2024-06-03
- *
- * @copyright Copyright (c) 2024
- *
- */
+//
+// pch.h
+//
+
+#pragma once
+
+#include "gtest/gtest.h"
+
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -18,108 +16,34 @@
 #include <conio.h>
 #include <map>
 
-class read
-{
-
-public:
-    std::vector<std::string> processedLines;
-    /**
-     * @brief Construct a new read object
-     *
-     * @param path
-     */
-    explicit read(const char *path = {}) : path(path)
-    {
-        FILE *file;
-        file = fopen(path, "r");
-        if (file == nullptr)
-        {
-            std::cerr << "File open failed" << std::endl;
-            exit(1);
-        }
-        processFile(file);
-        fclose(file);
-    }
-
-private:
-    const char *path;
-    /**
-     * @brief
-     *
-     * @param file
-     */
-    void processFile(FILE *file)
-    {
-        char buffer[1024];
-        while (fgets(buffer, 1024, file) != NULL)
-        {
-            std::string line(buffer);
-            processedLines = processLine(line);
-        }
-    }
-
-    /**
-     * @brief
-     *
-     * @param line
-     * @return std::vector<std::string>
-     */
-    std::vector<std::string> processLine(const std::string &line)
-    {
-        std::string processedLine = {};
-        for (char c : line)
-        {
-            if (c >= 'a' && c <= 'z')
-            {
-                processedLine += c;
-            }
-            else if (c >= 'A' && c <= 'Z')
-            {
-                processedLine += c - 'A' + 'a';
-            }
-            else
-            {
-                if (processedLine != "")
-                    processedLines.push_back(processedLine);
-                processedLine = {};
-            }
-        }
-        return processedLines;
-    }
-};
 
 class Graph
 {
 public:
-    /**
-     * @brief Construct a new Graph object
-     *
-     * @param words
-     */
-    explicit Graph(std::vector<std::string> words)
+    Graph(std::vector<std::string> words)
     {
-        // åˆå§‹åŒ–èŠ‚ç‚¹
+        // ³õÊ¼»¯½Úµã
         int location = 0;
         for (int i = 0; i < words.size(); i++)
         {
             // std::string word = words[i];
             if (nodes.find(words[i]) == nodes.end())
             {
-                nodes.try_emplace(words[i], location);
+                nodes[words[i]] = location;
                 location++;
             }
         }
 
-        // åˆå§‹åŒ–é‚»æ¥è¡¨
+        // ³õÊ¼»¯ÁÚ½Ó±í
         adj.resize(nodes.size());
 
-        // å»ºç«‹è¾¹å’Œæƒé‡
+        // ½¨Á¢±ßºÍÈ¨ÖØ
         for (int i = 0; i < words.size() - 1; i++)
         {
             std::string word1 = words[i];
             int j = i + 1;
             std::string word2 = words[j];
-            int w = 1; // é»˜è®¤æƒé‡ä¸º1
+            int w = 1; // Ä¬ÈÏÈ¨ÖØÎª1
             for (int k = j; k < words.size() - 1; k++)
             {
                 if (words[k] == word1 && words[k + 1] == word2)
@@ -127,85 +51,32 @@ public:
             }
 
             int in = 0;
-            for (const auto &p : adj[nodes[word1]])
+            for (auto& p : adj[nodes[word1]])
             {
                 if (p.first == nodes[word2])
                     in = 1;
             }
             if (!in)
-                adj[nodes[word1]].push_back({nodes[word2], w});
+                adj[nodes[word1]].push_back({ nodes[word2], w });
         }
-        todo();
+
     };
 
-private:
-    std::unordered_map<std::string, int> nodes;        // èŠ‚ç‚¹åŠå¯¹åº”ç¼–å·
-    std::vector<std::vector<std::pair<int, int>>> adj; // é‚»æ¥è¡¨
 
-    /**
-     * @brief å‡‘åˆç”¨çš„ui
-     *
-     */
-    void Menu()
-    {
-        std::cout << "-----------------------" << std::endl;
-        std::cout << "chose one func to run" << std::endl;
-        std::cout << "0.showDirectedGraph" << std::endl;
-        std::cout << "1.queryBridgeWords" << std::endl;
-        std::cout << "2.generateNewText" << std::endl;
-        std::cout << "3.calcShortestPath" << std::endl;
-        std::cout << "4.randomWalk" << std::endl;
-        std::cout << "-----------------------" << std::endl;
-    }
+    std::vector<std::string> words;                    // µ¥´Ê±í
+    std::unordered_map<std::string, int> nodes;        // ½Úµã¼°¶ÔÓ¦±àºÅ
+    std::vector<std::vector<std::pair<int, int>>> adj; // ÁÚ½Ó±í
 
-    /**
-     * @brief æ‰§è¡Œ
-     *
-     */
-    void todo()
-    {
-        Menu();
-        while (1)
-        { // æ— é™å¾ªç¯ï¼Œé™¤éç”¨æˆ·é€‰æ‹©é€€å‡º
-            char ch;
-            std::cout << "press '0'~'4'" << std::endl;
-            std::cin >> ch; // ç­‰å¾…ç”¨æˆ·è¾“å…¥
-            switch (ch)
-            {
-            case '0':
-                try_showDirectedGraph();
-                break;
-            case '1':
-                try_queryBridgeWords();
-                break;
-            case '2':
-                try_generateNewText();
-                break;
-            case '3':
-                try_calcShortestPath();
-                break;
-            case '4':
-                try_randomWalk();
-                break;
-            default:
-                return;
-            }
-        }
-    }
+    // ´ÕºÏÓÃµÄui
+   
 
-    /**
-     * @brief æ‰§è¡Œç»˜åˆ¶æœ‰å‘å›¾
-     *
-     */
+    // Ö´ĞĞ»æÖÆÓĞÏòÍ¼
     void try_showDirectedGraph()
     {
         showDirectedGraph();
     }
 
-    /**
-     * @brief æ‰§è¡Œæ¡¥æ¥è¯æŸ¥è¯¢
-     *
-     */
+    // Ö´ĞĞÇÅ½Ó´Ê²éÑ¯
     void try_queryBridgeWords()
     {
         std::cout << "plz input word1 and word2 toget BridgeWords" << std::endl;
@@ -214,10 +85,7 @@ private:
         queryBridgeWords(word1, word2);
     }
 
-    /**
-     * @brief æ‰§è¡Œæ¡¥æ¥æ–‡æœ¬ç”Ÿæˆ
-     *
-     */
+    // Ö´ĞĞÇÅ½ÓÎÄ±¾Éú³É
     void try_generateNewText()
     {
         getchar();
@@ -227,10 +95,7 @@ private:
         std::string newtext = generateNewText(text);
     }
 
-    /**
-     * @brief æ‰§è¡Œè®¡ç®—æœ€çŸ­è·¯å¾„
-     *
-     */
+    // Ö´ĞĞ¼ÆËã×î¶ÌÂ·¾¶
     void try_calcShortestPath()
     {
         getchar();
@@ -283,7 +148,7 @@ private:
             }
         else
         {
-            for (const auto &node : nodes)
+            for (const auto& node : nodes)
             {
                 {
                     if (nodes.find(tokens[0]) == nodes.end())
@@ -297,75 +162,66 @@ private:
         }
     }
 
-    /**
-     * @brief æ‰§è¡Œéšæœºæ¸¸èµ°
-     *
-     */
+    // Ö´ĞĞËæ»úÓÎ×ß
     void try_randomWalk()
     {
         std::vector<std::string> randomwalk = randomWalk();
         std::cout << "randomWalk finished" << std::endl;
     }
 
-    /**
-     * @brief æ‰“å°å›¾
-     *
-     */
-    // void print()
-    // {
-    //     std::cout << "Nodes:" << std::endl;
-    //     for (const auto &p : nodes)
-    //     {
-    //         std::cout << p.first << " ";
-    //     }
-    //     std::cout << std::endl;
+    // ´òÓ¡Í¼
+    void print()
+    {
+        std::cout << "Nodes:" << std::endl;
+        for (auto& p : nodes)
+        {
+            std::cout << p.first << " ";
+        }
+        std::cout << std::endl;
 
-    //     std::cout << "Adjacency List:" << std::endl;
-    //     for (int i = 0; i < adj.size(); ++i)
-    //     {
-    //         std::cout << i << " -> ";
-    //         for (const auto &p : adj[i])
-    //         {
-    //             std::cout << "(" << p.first << ", " << p.second << ") ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    // }
+        std::cout << "Adjacency List:" << std::endl;
+        for (int i = 0; i < adj.size(); ++i)
+        {
+            std::cout << i << " -> ";
+            for (auto& p : adj[i])
+            {
+                std::cout << "(" << p.first << ", " << p.second << ") ";
+            }
+            std::cout << std::endl;
+        }
+    }
 
-    /**
-     * @brief ç»˜åˆ¶æœ‰å‘å›¾
-     *
-     */
+    // »æÖÆÓĞÏòÍ¼
     void showDirectedGraph()
     {
 
-        // åˆ›å»ºDOTæ–‡ä»¶
+        // ´´½¨DOTÎÄ¼ş
         std::ofstream dot_file("graph.dot");
         if (dot_file.is_open())
         {
-            // å†™å…¥DOTæ–‡ä»¶çš„å¤´éƒ¨
+            // Ğ´ÈëDOTÎÄ¼şµÄÍ·²¿
             dot_file << "digraph G {" << std::endl;
 
-            // å†™å…¥èŠ‚ç‚¹
-            for (const auto &pair : nodes)
+            // Ğ´Èë½Úµã
+            for (const auto& pair : nodes)
             {
                 dot_file << pair.second << " [label=\"" << pair.first << "\"]" << std::endl;
             }
             dot_file << std::endl;
-            // å†™å…¥è¾¹
+            // Ğ´Èë±ß
             for (int i = 0; i < adj.size(); ++i)
             {
-                for (const auto &p : adj[i])
+                for (auto& p : adj[i])
                 {
                     dot_file << i << " -> " << p.first << " [label=\"" << p.second << "\"]" << std::endl;
                 }
             }
 
-            // å†™å…¥DOTæ–‡ä»¶çš„å°¾éƒ¨
+            // Ğ´ÈëDOTÎÄ¼şµÄÎ²²¿
             dot_file << "}" << std::endl;
             dot_file.close();
 
-            // ä½¿ç”¨Graphvizè‡ªåŠ¨ç”Ÿæˆå›¾åƒ
+            // Ê¹ÓÃGraphviz×Ô¶¯Éú³ÉÍ¼Ïñ
             std::system("dot -Tpng graph.dot -o graph.png");
             std::cout << "graph.png Saved" << std::endl;
         }
@@ -376,14 +232,7 @@ private:
         }
     }
 
-    /**
-     * @brief æŸ¥è¯¢æ¡¥æ¥è¯
-     *
-     * @param word1
-     * @param word2
-     * @param if_print
-     * @return std::vector<std::string>
-     */
+    // ²éÑ¯ÇÅ½Ó´Ê
     std::vector<std::string> queryBridgeWords(std::string word1, std::string word2, int if_print = 1)
     {
         std::vector<std::string> bridgewords = {};
@@ -404,14 +253,14 @@ private:
                 std::cerr << "No \"" << word2 << "\" in the graph!" << std::endl;
                 return bridgewords;
             }
-        for (const auto &w1 : nodes)
+        for (auto& w1 : nodes)
         {
             if (word1 == w1.first)
             {
-                for (const auto &w2 : adj[w1.second])
-                    for (const auto &w3 : adj[w2.first])
+                for (auto& w2 : adj[w1.second])
+                    for (auto& w3 : adj[w2.first])
                         if (nodes[word2] == w3.first)
-                            for (const auto &bridge : nodes)
+                            for (auto& bridge : nodes)
                                 if (bridge.second == w2.first)
                                     bridgewords.push_back(bridge.first);
             }
@@ -438,13 +287,8 @@ private:
         return bridgewords;
     }
 
-    /**
-     * @brief æ ¹æ®bridge wordç”Ÿæˆæ–°æ–‡æœ¬
-     *
-     * @param inputText
-     * @return * std::string
-     */
-    std::string generateNewText(const std::string &inputText)
+    // ¸ù¾İbridge wordÉú³ÉĞÂÎÄ±¾
+    std::string generateNewText(std::string inputText)
     {
         std::string text2word = "";
         std::vector<std::string> text2words = {};
@@ -480,13 +324,7 @@ private:
         return newtext;
     }
 
-    /**
-     * @brief è®¡ç®—ä¸¤ä¸ªå•è¯ä¹‹é—´çš„æœ€çŸ­è·¯å¾„
-     *
-     * @param start
-     * @param end
-     * @return std::vector<std::string>
-     */
+    // ¼ÆËãÁ½¸öµ¥´ÊÖ®¼äµÄ×î¶ÌÂ·¾¶
     std::vector<std::string> calcShortestPath(std::string start, std::string end)
     {
         if ((nodes.find(start) == nodes.end()) &&
@@ -506,72 +344,72 @@ private:
             return {};
         }
 
-        // è·ç¦»æ•°ç»„ï¼Œåˆå§‹åŒ–ä¸ºæ— ç©·å¤§
+        // ¾àÀëÊı×é£¬³õÊ¼»¯ÎªÎŞÇî´ó
         std::vector<int> dist(adj.size(), INT_MAX);
-        // prevæ•°ç»„ï¼Œç”¨äºè¿½è¸ªè·¯å¾„
+        // prevÊı×é£¬ÓÃÓÚ×·×ÙÂ·¾¶
         std::vector<std::string> prev(adj.size(), "");
-        // ä¼˜å…ˆé˜Ÿåˆ—ï¼ŒæŒ‰ç…§è·ç¦»æ’åº
+        // ÓÅÏÈ¶ÓÁĞ£¬°´ÕÕ¾àÀëÅÅĞò
         std::priority_queue<std::pair<int, std::string>,
-                            std::vector<std::pair<int, std::string>>,
-                            std::greater<std::pair<int, std::string>>>
+            std::vector<std::pair<int, std::string>>,
+            std::greater<std::pair<int, std::string>>>
             pq;
 
-        // åˆå§‹åŒ–èµ·ç‚¹åˆ°èµ·ç‚¹çš„è·ç¦»ä¸º0
+        // ³õÊ¼»¯Æğµãµ½ÆğµãµÄ¾àÀëÎª0
 
         dist[nodes[start]] = 0;
 
-        pq.push({0, start});
+        pq.push({ 0, start });
         while (!pq.empty())
         {
             auto [d, u] = pq.top();
             pq.pop();
 
-            // å¦‚æœè¿™ä¸ªç‚¹çš„è·ç¦»å·²ç»ä¸æ˜¯æœ€çŸ­ï¼Œåˆ™è·³è¿‡
+            // Èç¹ûÕâ¸öµãµÄ¾àÀëÒÑ¾­²»ÊÇ×î¶Ì£¬ÔòÌø¹ı
             if (d > dist[nodes[u]])
                 continue;
 
-            // éå†ç›¸é‚»çš„èŠ‚ç‚¹
-            for (const auto [v, w] : adj[nodes[u]])
+            // ±éÀúÏàÁÚµÄ½Úµã
+            for (auto [v, w] : adj[nodes[u]])
             {
-                // åªæœ‰å½“é€šè¿‡uåˆ°vçš„è·¯å¾„æ¯”ç›´æ¥åˆ°vçš„è·¯å¾„æ›´çŸ­æ—¶ï¼Œæ‰æ›´æ–°æœ€çŸ­è·¯å¾„
-                for (const auto &p : nodes)
+                // Ö»ÓĞµ±Í¨¹ıuµ½vµÄÂ·¾¶±ÈÖ±½Óµ½vµÄÂ·¾¶¸ü¶ÌÊ±£¬²Å¸üĞÂ×î¶ÌÂ·¾¶
+                for (auto& p : nodes)
                     if (d + w < dist[v])
                     {
                         dist[v] = d + w;
                         prev[v] = u;
                         std::string word;
-                        for (const auto &q : nodes)
-                            if (q.second == v)
-                                word = q.first;
-                        pq.push({dist[v], word});
+                        for (auto& p : nodes)
+                            if (p.second == v)
+                                word = p.first;
+                        pq.push({ dist[v], word });
                     }
             }
         }
 
-        // å¦‚æœç»ˆç‚¹ä¸å¯è¾¾ï¼Œåˆ™è¿”å›ç©º
+        // Èç¹ûÖÕµã²»¿É´ï£¬Ôò·µ»Ø¿Õ
         if (dist[nodes[end]] == INT_MAX)
         {
             std::cout << "The two nodes are not reachable." << std::endl;
             return {};
         }
 
-        // æ„å»ºå¹¶æ‰“å°è·¯å¾„
+        // ¹¹½¨²¢´òÓ¡Â·¾¶
         std::vector<std::string> path;
         std::string current = end;
 
-        // æ˜¯å¦æ˜¯è‡ªèº«åˆ°è‡ªèº«
+        // ÊÇ·ñÊÇ×ÔÉíµ½×ÔÉí
         int length = INT_MAX;
         if (start == end)
         {
             for (int i = 0; i < nodes.size(); i++)
-                for (const auto &p : adj[i])
+                for (auto& p : adj[i])
                 {
                     if (p.first == nodes[start])
                         length = std::min(length, p.second + dist[i]);
                 }
 
             dist[nodes[start]] = INT_MAX;
-            for (const auto &p : adj[nodes[start]])
+            for (auto& p : adj[nodes[start]])
             {
                 // std::cout << "{" << p.first << "," << p.second << "}" << std::endl;
                 if (p.first == nodes[start])
@@ -593,10 +431,10 @@ private:
             {
                 int count;
                 for (int i = 0; i < nodes.size(); i++)
-                    for (const auto &p : adj[i])
+                    for (auto& p : adj[i])
                         if (p.first == nodes[start] && (p.second + dist[i]) == length)
                             count = i;
-                for (const auto &p : nodes)
+                for (auto& p : nodes)
                     if (p.second == count)
                         current = p.first;
                 std::cout << current << std::endl;
@@ -622,6 +460,7 @@ private:
             else
             {
                 path.push_back(start);
+                length = dist[nodes[start]];
                 std::cout << "Shortest path: ";
                 for (auto p = path.begin(); p != path.end() - 1; p++)
                 {
@@ -649,23 +488,19 @@ private:
             std::cout << "Length: " << dist[nodes[end]] << std::endl;
         }
 
-        // æ‰“å°è·¯å¾„å’Œé•¿åº¦
+        // ´òÓ¡Â·¾¶ºÍ³¤¶È
 
         return path;
     }
 
-    /**
-     * @brief éšæœºæ¸¸èµ°
-     *
-     * @return * std::vector<std::string>
-     */
+    // Ëæ»úÓÎ×ß
     std::vector<std::string> randomWalk()
     {
         srand(0);
         std::vector<std::string> path = {};
         std::string start;
         int randnum = rand() % nodes.size();
-        for (const auto &p : nodes)
+        for (auto& p : nodes)
             if (p.second == randnum)
                 start = p.first;
         int prve = nodes[start];
@@ -685,14 +520,14 @@ private:
                 if (!mark[prve][next])
                 {
                     mark[prve][next] = 1;
-                    for (const auto &p : nodes)
+                    for (auto& p : nodes)
                         if (p.second == prve)
                             path.push_back(p.first);
                     prve = next;
                 }
                 else
                 {
-                    for (const auto &p : nodes)
+                    for (auto& p : nodes)
                         if (p.second == prve)
                             path.push_back(p.first);
                     prve = next;
@@ -702,7 +537,7 @@ private:
             std::cout << "Func has run \"" << path.size() + 1 << "\" times" << std::endl;
         }
 
-        for (const auto &p : nodes)
+        for (auto& p : nodes)
             if (p.second == prve)
                 path.push_back(p.first);
 
@@ -718,9 +553,3 @@ private:
         return path;
     }
 };
-
-int main()
-{
-    read file = read("input.txt");
-    Graph Graph(file.processedLines);
-}
